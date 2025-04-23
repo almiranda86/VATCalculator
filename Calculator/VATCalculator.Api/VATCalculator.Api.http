@@ -1,0 +1,6 @@
+@VATCalculator.Api_HostAddress = http://localhost:5007
+
+GET {{VATCalculator.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

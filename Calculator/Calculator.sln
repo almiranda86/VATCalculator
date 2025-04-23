@@ -1,0 +1,52 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35828.75 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VATCalculator.Api", "VATCalculator.Api\VATCalculator.Api.csproj", "{E722B712-E706-4CD8-A2A6-13BC89EBD874}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VATCalculator.Service", "VAT.Service\VATCalculator.Service.csproj", "{3260DE48-4572-4621-B513-FD9B1B5705A2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Application", "Application", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VATCalculator.Domain", "VATCalculator.Domain\VATCalculator.Domain.csproj", "{FC61BF89-3821-423E-AD89-4318D8796D30}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domain", "Domain", "{D2287110-8894-4256-84E9-CD8CD624DAA2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VATCalculator.Tests", "VATCalculator.Tests\VATCalculator.Tests.csproj", "{B7732081-E23E-4A2C-ABD9-C96E01012AD8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E722B712-E706-4CD8-A2A6-13BC89EBD874}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E722B712-E706-4CD8-A2A6-13BC89EBD874}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E722B712-E706-4CD8-A2A6-13BC89EBD874}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E722B712-E706-4CD8-A2A6-13BC89EBD874}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3260DE48-4572-4621-B513-FD9B1B5705A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3260DE48-4572-4621-B513-FD9B1B5705A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3260DE48-4572-4621-B513-FD9B1B5705A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3260DE48-4572-4621-B513-FD9B1B5705A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FC61BF89-3821-423E-AD89-4318D8796D30}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC61BF89-3821-423E-AD89-4318D8796D30}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC61BF89-3821-423E-AD89-4318D8796D30}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC61BF89-3821-423E-AD89-4318D8796D30}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7732081-E23E-4A2C-ABD9-C96E01012AD8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7732081-E23E-4A2C-ABD9-C96E01012AD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7732081-E23E-4A2C-ABD9-C96E01012AD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7732081-E23E-4A2C-ABD9-C96E01012AD8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{E722B712-E706-4CD8-A2A6-13BC89EBD874} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{3260DE48-4572-4621-B513-FD9B1B5705A2} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{FC61BF89-3821-423E-AD89-4318D8796D30} = {D2287110-8894-4256-84E9-CD8CD624DAA2}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {282ED077-6A44-4BBD-B486-8D74BF2ACE6D}
+	EndGlobalSection
+EndGlobal

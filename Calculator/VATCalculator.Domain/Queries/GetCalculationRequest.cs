@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace VATCalculator.Domain.Queries
+﻿namespace VATCalculator.Domain.Queries
 {
     public sealed class GetCalculationRequest
     {
@@ -19,6 +13,14 @@ namespace VATCalculator.Domain.Queries
             GrossAmount = string.Empty;
             VatTaxAmmount = string.Empty;
             VatRate = string.Empty;
+        }
+
+        public GetCalculationRequest(string netAmmount, string grossAmount, string vatTaxAmmount, string vatRate)
+        {
+            NetAmmount = netAmmount ?? string.Empty;
+            GrossAmount = grossAmount ?? string.Empty;
+            VatTaxAmmount = vatTaxAmmount ?? string.Empty;
+            VatRate = vatRate ?? string.Empty;
         }
     }
 }

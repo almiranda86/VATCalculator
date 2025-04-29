@@ -8,6 +8,9 @@ namespace VATCalculator.Api.IoC
         public static IServiceCollection AddServices(this IServiceCollection services)
         {
             services.AddScoped<ICalculationManager, CalculationManager>();
+            services.AddScoped<INetAmmountCalculationManager, NetAmmountCalculationManager>();
+            services.AddScoped<IGrossAmmountCalculationManager, GrossAmmountCalculationManager>();
+            services.AddScoped<IVatTaxAmmountCalculationManager, VatTaxAmmountCalculationManager>();
 
             return services;
         }

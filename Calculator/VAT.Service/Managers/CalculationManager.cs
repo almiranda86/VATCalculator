@@ -5,13 +5,21 @@ using VATCalculator.Domain.Queries;
 
 namespace VATCalculator.Service.Managers
 {
-    public class CalculationManager : ICalculationManager, INetAmmountCalculationManager, IGrossAmmountCalculationManager, IVatTaxAmmountCalculationManager
+    public class CalculationManager : ICalculationManager
     {
         private readonly IValidator<GetCalculationRequest> _validator;
-
-        public CalculationManager(IValidator<GetCalculationRequest> validator)
+        private readonly INetAmmountCalculationManager _netAmmountCalculationManager;
+        private readonly IGrossAmmountCalculationManager _grossAmmountCalculationManager;
+        private readonly IVatTaxAmmountCalculationManager _vatTaxAmmountCalculationManager;
+        public CalculationManager(IValidator<GetCalculationRequest> validator,
+            INetAmmountCalculationManager netAmmountCalculationManager,
+            IGrossAmmountCalculationManager grossAmmountCalculationManager,
+            IVatTaxAmmountCalculationManager vatTaxAmmountCalculationManager)
         {
             _validator = validator ?? throw new ArgumentNullException(nameof(validator));
+            _netAmmountCalculationManager = netAmmountCalculationManager ?? throw new ArgumentNullException(nameof(netAmmountCalculationManager));
+            _grossAmmountCalculationManager = grossAmmountCalculationManager ?? throw new ArgumentNullException(nameof(grossAmmountCalculationManager));
+            _vatTaxAmmountCalculationManager = vatTaxAmmountCalculationManager ?? throw new ArgumentNullException(nameof(vatTaxAmmountCalculationManager));
         }
 
         public async Task<Result<GetCalculationResult>> HandleCalculation(GetCalculationRequest request, CancellationToken cancellationToken)
@@ -42,30 +50,21 @@ namespace VATCalculator.Service.Managers
         }
 
 
-        public GetCalculationResult CalculateFromNetAmmount(string netAmmount, string vatRate)
+        private GetCalculationResult CalculateFromNetAmmount(string netAmmount, string vatRate)
         {
-            var vatTaxAmmount = (decimal.Parse(netAmmount) * decimal.Parse(vatRate)) / 100;
-            var grossAmmount = decimal.Parse(netAmmount) + vatTaxAmmount;
-            var netAmmountResult = decimal.Parse(netAmmount);
-
+            var (netAmmountResult, grossAmmount, vatTaxAmmount) = _netAmmountCalculationManager.CalculateFromNetAmmount(netAmmount, vatRate);
             return new GetCalculationResult((double)netAmmountResult, (double)grossAmmount, (double)vatTaxAmmount);
         }
 
-        public GetCalculationResult CalculateFromGrossAmmount(string grossAmmount, string vatRate)
+        private GetCalculationResult CalculateFromGrossAmmount(string grossAmmount, string vatRate)
         {
-            var vatTaxAmmount = (decimal.Parse(grossAmmount) * decimal.Parse(vatRate)) / (100 + decimal.Parse(vatRate));
-            var netAmmount = decimal.Parse(grossAmmount) - vatTaxAmmount;
-            var grossAmmountResult = decimal.Parse(grossAmmount);
-
+            var (netAmmount, grossAmmountResult, vatTaxAmmount) = _grossAmmountCalculationManager.CalculateFromGrossAmmount(grossAmmount, vatRate);
             return new GetCalculationResult((double)netAmmount, (double)grossAmmountResult, (double)vatTaxAmmount);
         }
 
         public GetCalculationResult CalculateFromVatTaxAmmount(string vatTaxAmmount, string vatRate)
         {
-            var netAmmount = (decimal.Parse(vatTaxAmmount) * 100) / decimal.Parse(vatRate);
-            var grossAmmount = decimal.Parse(vatTaxAmmount) + netAmmount;
-            var vatTaxAmmountResult = decimal.Parse(vatTaxAmmount);
-
+            var (netAmmount, grossAmmount, vatTaxAmmountResult) = _vatTaxAmmountCalculationManager.CalculateFromVatTaxAmmount(vatTaxAmmount, vatRate);
             return new GetCalculationResult((double)netAmmount, (double)grossAmmount, (double)vatTaxAmmountResult);
         }
 

@@ -4,6 +4,6 @@ namespace VATCalculator.Domain.Behavior.Service
 {
     public interface IGrossAmmountCalculationManager
     {
-        public GetCalculationResult CalculateFromGrossAmmount(string grossAmmount, string vatRate);
+        public (decimal, decimal, decimal) CalculateFromGrossAmmount(string grossAmmount, string vatRate);
     }
 }

@@ -1,10 +1,13 @@
 ﻿using VATCalculator.Domain.Behavior.Service;
+using VATCalculator.Domain.Strategy;
 
 namespace VATCalculator.Service.Managers
 {
-    public class GrossAmmountCalculationManager : IGrossAmmountCalculationManager
+    public class GrossAmmountCalculationManager : ICalculateVAT
     {
-        public (decimal, decimal, decimal) CalculateFromGrossAmmount(string grossAmmount, string vatRate)
+        public EVatCalculationMethods eVatCalculationMethod { get; set; } = EVatCalculationMethods.GrossAmmount;
+
+        public (decimal, decimal, decimal) Calculate(string grossAmmount, string vatRate)
         {
             var vatTaxAmmount = (decimal.Parse(grossAmmount) * decimal.Parse(vatRate)) / (100 + decimal.Parse(vatRate));
             var netAmmount = decimal.Parse(grossAmmount) - vatTaxAmmount;

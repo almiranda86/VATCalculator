@@ -3,6 +3,7 @@ using FluentValidation.Results;
 using Moq;
 using VATCalculator.Domain.Behavior.Service;
 using VATCalculator.Domain.Queries;
+using VATCalculator.Domain.Strategy;
 using VATCalculator.Service.Managers;
 
 namespace VATCalculator.Tests
@@ -10,45 +11,35 @@ namespace VATCalculator.Tests
     public class CalculationManagerTests
     {
         private readonly Mock<IValidator<GetCalculationRequest>> _validatorMock;
-        private readonly Mock<INetAmmountCalculationManager> _netAmmountCalculationManagerMock;
-        private readonly Mock<IGrossAmmountCalculationManager> _grossAmmountCalculationManagerMock;
-        private readonly Mock<IVatTaxAmmountCalculationManager> _vatTaxAmmountCalculationManagerMock;
+        private readonly Mock<ICalculateVATResolver> _resolverMock;
         private readonly CalculationManager _calculationManager;
 
         public CalculationManagerTests()
         {
             _validatorMock = new Mock<IValidator<GetCalculationRequest>>();
-            _netAmmountCalculationManagerMock = new Mock<INetAmmountCalculationManager>();
-            _grossAmmountCalculationManagerMock = new Mock<IGrossAmmountCalculationManager>();
-            _vatTaxAmmountCalculationManagerMock = new Mock<IVatTaxAmmountCalculationManager>();
-
-            _calculationManager = new CalculationManager(
-                _validatorMock.Object,
-                _netAmmountCalculationManagerMock.Object,
-                _grossAmmountCalculationManagerMock.Object,
-                _vatTaxAmmountCalculationManagerMock.Object
-            );
+            _resolverMock = new Mock<ICalculateVATResolver>();
+            _calculationManager = new CalculationManager(_validatorMock.Object, _resolverMock.Object);
         }
 
         [Fact]
-        public async Task HandleCalculation_ShouldCalculateFromNetAmount_WhenNetAmountIsProvided()
+        public async Task HandleCalculation_ShouldReturnResult_WhenCalculatingFromNetAmount()
         {
             // Arrange
-            var request = new GetCalculationRequest
-            {
-                NetAmmount = "100",
-                VatRate = "20"
-            };
+            var request = new GetCalculationRequest { NetAmmount = "100", VatRate = "20" };
+            var cancellationToken = CancellationToken.None;
 
             _validatorMock.Setup(v => v.ValidateAsync(request, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new ValidationResult());
 
-            _netAmmountCalculationManagerMock
-                .Setup(m => m.CalculateFromNetAmmount("100", "20"))
-                .Returns((100m, 120m, 20m));
+            var calculateVATMock = new Mock<ICalculateVAT>();
+            calculateVATMock.Setup(c => c.Calculate("100", "20"))
+                .Returns((120m, 100m, 20m));
+
+            _resolverMock.Setup(r => r.Resolver(EVatCalculationMethods.NetAmmount))
+                .Returns(new NetAmmountCalculationManager());
 
             // Act
-            var result = await _calculationManager.HandleCalculation(request, default);
+            var result = await _calculationManager.HandleCalculation(request, cancellationToken);
 
             // Assert
             Assert.True(result.IsSuccessful);
@@ -58,24 +49,24 @@ namespace VATCalculator.Tests
         }
 
         [Fact]
-        public async Task HandleCalculation_ShouldCalculateFromGrossAmount_WhenGrossAmountIsProvided()
+        public async Task HandleCalculation_ShouldReturnResult_WhenCalculatingFromGrossAmount()
         {
             // Arrange
-            var request = new GetCalculationRequest
-            {
-                GrossAmount = "120",
-                VatRate = "20"
-            };
+            var request = new GetCalculationRequest { GrossAmount = "120", VatRate = "20" };
+            var cancellationToken = CancellationToken.None;
 
             _validatorMock.Setup(v => v.ValidateAsync(request, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new ValidationResult());
 
-            _grossAmmountCalculationManagerMock
-                .Setup(m => m.CalculateFromGrossAmmount("120", "20"))
+            var calculateVATMock = new Mock<ICalculateVAT>();
+            calculateVATMock.Setup(c => c.Calculate("120", "20"))
                 .Returns((100m, 120m, 20m));
 
+            _resolverMock.Setup(r => r.Resolver(EVatCalculationMethods.GrossAmmount))
+                .Returns(new GrossAmmountCalculationManager());
+
             // Act
-            var result = await _calculationManager.HandleCalculation(request, default);
+            var result = await _calculationManager.HandleCalculation(request, cancellationToken);
 
             // Assert
             Assert.True(result.IsSuccessful);
@@ -85,30 +76,48 @@ namespace VATCalculator.Tests
         }
 
         [Fact]
-        public async Task HandleCalculation_ShouldCalculateFromVatTaxAmount_WhenVatTaxAmountIsProvided()
+        public async Task HandleCalculation_ShouldReturnResult_WhenCalculatingFromVatTaxAmount()
         {
             // Arrange
-            var request = new GetCalculationRequest
-            {
-                VatTaxAmmount = "20",
-                VatRate = "20"
-            };
+            var request = new GetCalculationRequest { VatTaxAmmount = "20", VatRate = "20" };
+            var cancellationToken = CancellationToken.None;
 
             _validatorMock.Setup(v => v.ValidateAsync(request, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new ValidationResult());
 
-            _vatTaxAmmountCalculationManagerMock
-                .Setup(m => m.CalculateFromVatTaxAmmount("20", "20"))
+            var calculateVATMock = new Mock<ICalculateVAT>();
+            calculateVATMock.Setup(c => c.Calculate("20", "20"))
                 .Returns((100m, 120m, 20m));
 
+            _resolverMock.Setup(r => r.Resolver(EVatCalculationMethods.VatTaxAmmount))
+                .Returns(new VatTaxAmmountCalculationManager());
+
             // Act
-            var result = await _calculationManager.HandleCalculation(request, default);
+            var result = await _calculationManager.HandleCalculation(request, cancellationToken);
 
             // Assert
             Assert.True(result.IsSuccessful);
             Assert.Equal(100, result.ResponseModel.NetAmmount);
             Assert.Equal(120, result.ResponseModel.GrossAmount);
             Assert.Equal(20, result.ResponseModel.VatTaxAmmount);
+        }
+
+        [Fact]
+        public async Task HandleCalculation_ShouldReturnError_WhenNoValidCalculationMethod()
+        {
+            // Arrange
+            var request = new GetCalculationRequest { VatRate = "20" };
+            var cancellationToken = CancellationToken.None;
+
+            _validatorMock.Setup(v => v.ValidateAsync(request, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new ValidationResult());
+
+            // Act
+            var result = await _calculationManager.HandleCalculation(request, cancellationToken);
+
+            // Assert
+            Assert.True(result.IsFailed);
+            Assert.Contains(result.Errors, e => e.Message.Contains("Something went wrong"));
         }
     }
 }
